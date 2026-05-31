@@ -1,0 +1,15 @@
+# Codex bridge thread state (codex_bridge.sh writes these next to its --state path).
+# May contain source-code excerpts and prompt/response text — never commit them.
+*.sid
+*.reply
+*.log
+
+# Installer backups (install.sh backs up settings.json before wiring the hook).
+*.bak
+*.bak.*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
