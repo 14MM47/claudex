@@ -103,9 +103,12 @@ T=/tmp/codex_thread
 
 - A working **Codex CLI** — either the VS Code / Cursor `openai.chatgpt` extension
   installed and logged in, or a standalone `codex` on `PATH`. Auth is read from
-  `~/.codex/auth.json`. The bridge auto-detects the bundled binary on Linux
-  (`linux-x86_64`) and macOS (`darwin-arm64` / `darwin-x64`); set `CODEX_BIN` to
-  point at a specific binary if detection misses.
+  `~/.codex/auth.json`.
+- **Platform: Linux is verified** (`linux-x86_64`). **macOS is best-effort and
+  currently untested** — the detector tries the conventional `darwin-arm64` /
+  `darwin-x64` bundle paths and falls back to any `bin/*/codex`, but this hasn't been
+  confirmed on a real Mac. If auto-detection misses on any platform, set `CODEX_BIN`
+  to the binary's path to override. (Bash only; on Windows use WSL.)
 - `jq` (used by the hook to parse the prompt event; it degrades gracefully without it).
 - `shellcheck` (optional; only for the `post-edit-verify.sh` lint enhancement).
 
