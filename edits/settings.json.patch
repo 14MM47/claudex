@@ -1,0 +1,20 @@
+--- a/.claude/settings.json
++++ b/.claude/settings.json
+@@ -1,6 +1,17 @@
+ {
+   "model": "opus",
+   "hooks": {
++    "UserPromptSubmit": [
++      {
++        "hooks": [
++          {
++            "type": "command",
++            "command": "$HOME/.claude/hooks/codex-trigger.sh",
++            "timeout": 10
++          }
++        ]
++      }
++    ],
+     "PreToolUse": [
+       {
+         "matcher": "Bash",
