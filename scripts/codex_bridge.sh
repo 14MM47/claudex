@@ -65,6 +65,16 @@ find_codex() {
     "$HOME/.windsurf/extensions"
   )
 
+  # WSL: VS Code / Cursor usually run on the Windows host, so the extension
+  # (and its bundled linux-x86_64 codex) lives under /mnt/<drive>/Users/<user>.
+  # Append any such dirs; the version-sort below still picks the newest bundle.
+  if grep -qiE 'microsoft|wsl' /proc/version 2>/dev/null; then
+    local w
+    for w in /mnt/*/Users/*/.vscode/extensions /mnt/*/Users/*/.cursor/extensions; do
+      [[ -d "$w" ]] && roots+=("$w")
+    done
+  fi
+
   local pat r cand
   # Prefer the platform-specific bin dir; fall back to any bin/*/codex.
   for pat in "$plat" "*"; do
