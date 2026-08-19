@@ -1,13 +1,14 @@
-# codex-reconciler
+# claudex
 
-[![CI](https://github.com/14MM47/codex-reconciler/actions/workflows/ci.yml/badge.svg)](https://github.com/14MM47/codex-reconciler/actions/workflows/ci.yml)
+[![CI](https://github.com/14MM47/claudex/actions/workflows/ci.yml/badge.svg)](https://github.com/14MM47/claudex/actions/workflows/ci.yml)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-agent-d97757?logo=anthropic&logoColor=white)
 ![OpenAI Codex](https://img.shields.io/badge/OpenAI%20Codex-GPT--5.x-412991?logo=openai&logoColor=white)
 ![Bash](https://img.shields.io/badge/Bash-5.x-4EAA25?logo=gnubash&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
 ![Status](https://img.shields.io/badge/status-experimental-orange)
 
-A global Claude Code ↔ OpenAI Codex **adversarial-collaboration** workflow.
+**Claudex** — a global Claude Code ↔ OpenAI Codex **adversarial-collaboration**
+workflow: Claudex is the Codex reconciler.
 
 Asking Claude Code to *"check with Codex"* hands the disputed question, claim, diff,
 or design to **Codex (GPT-5.x)** and runs a **verified, multi-round back-and-forth** —
@@ -37,7 +38,7 @@ Standalone files (vendored in full):
 | Path | Role |
 |---|---|
 | `scripts/codex_bridge.sh` | Primitive: drives `codex exec` / `exec resume`, auto-finds the newest Codex binary, runs read-only, multi-turn sessions (context retained across turns). |
-| `agents/codex-reconciler.md` | The subagent that runs the Claude↔Codex debate loop, verifying each reply against code, and returns a structured verdict. |
+| `agents/claudex.md` | The `claudex` subagent that runs the Claude↔Codex debate loop, verifying each reply against code, and returns a structured verdict. |
 | `commands/check-with-codex.md` | The `/check-with-codex <issue>` slash command. |
 | `hooks/codex-trigger.sh` | `UserPromptSubmit` hook that routes "check with codex" intent to the agent. Pure text injection — **no network, no billing.** |
 
@@ -67,7 +68,7 @@ are left to you:
 # Both are reference snippets under edits/.
 ```
 
-The `codex-reconciler` subagent becomes selectable on the **next** Claude Code session
+The `claudex` subagent becomes selectable on the **next** Claude Code session
 (subagent types load at startup); the bridge and `/check-with-codex` command work
 immediately.
 
@@ -77,7 +78,7 @@ immediately.
 You:  check with codex whether <claim about the code>
 ```
 
-Claude launches the reconciler, which debates Codex and reports: the converged
+("check with claudex" works too.) Claude launches Claudex, which debates Codex and reports: the converged
 conclusion, verified findings (`file:line`), any remaining disagreement, and the number
 of billed Codex turns.
 

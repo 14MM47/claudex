@@ -2,7 +2,7 @@ Hand a technical question, claim, design, or diff to **OpenAI Codex (GPT-5.x)** 
 run a verified multi-round back-and-forth until Claude and Codex align (or a genuine
 disagreement is documented).
 
-This launches the **codex-reconciler** subagent, which drives the debate through
+This launches the **claudex** subagent (Claudex, the Codex reconciler), which drives the debate through
 `~/.claude/scripts/codex_bridge.sh`. Each Codex turn is a **billed OpenAI call**.
 
 Steps:
@@ -12,8 +12,8 @@ Steps:
    - If empty, use the matter currently under discussion in this conversation
      (the most recent claim, diff, bug, or design decision). State which you picked.
 
-2. Launch the `codex-reconciler` subagent (Agent tool, subagent_type
-   `codex-reconciler`) with a prompt containing:
+2. Launch the `claudex` subagent (Agent tool, subagent_type
+   `claudex`) with a prompt containing:
    - the precise question/claim to reconcile,
    - your *own* current position and the evidence for it (file:line) if you have one,
    - the relevant file paths, and the repo root,

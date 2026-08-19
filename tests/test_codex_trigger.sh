@@ -37,6 +37,9 @@ expect_fire "get codex's opinion on the diff"
 expect_fire "let's reconcile this design with codex"
 expect_fire "run it by codex"
 expect_fire "double-check the migration with codex"
+expect_fire "check with claudex whether the cache key is stable"
+expect_fire "run claudex on this diff"
+expect_fire "ask claudex about the retry logic"
 
 # --- should stay SILENT (incidental mention of the word "codex") ---
 expect_silent "what does the codex binary live in?"
@@ -44,6 +47,7 @@ expect_silent "explain how codex sessions are stored"
 expect_silent "check how the codex directory is laid out"
 expect_silent "the codex directory belongs to openai"
 expect_silent "can you converse with codex?"
+expect_silent "rename the claudex repo directory"
 
 echo "-----------------------------------------"
 echo "PASS=$pass FAIL=$fail"

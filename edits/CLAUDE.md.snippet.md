@@ -16,9 +16,10 @@ Add after the `/verify` entry:
 ```markdown
 ## Second-Opinion Reconciliation with Codex
 
-When the user asks to **"check with Codex"**, "verify/reconcile with Codex", "ask Codex",
+The Codex-reconciler system is named **Claudex**. When the user asks to **"check with
+Codex"** (or "with claudex"), "verify/reconcile with Codex", "ask Codex", "run claudex",
 or get Codex's opinion, do **not** make a one-off Codex call. Launch the
-**`codex-reconciler`** subagent (Agent tool, `subagent_type: codex-reconciler`), passing the
+**`claudex`** subagent (Agent tool, `subagent_type: claudex`), passing the
 issue, your own current position with `file:line` evidence, and the repo root. It runs a
 verified, multi-round Claude↔Codex debate via `~/.claude/scripts/codex_bridge.sh`,
 **checking each side's claims against the actual code**, until they align or a genuine

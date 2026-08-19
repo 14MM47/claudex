@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install the standalone codex-reconciler files into ~/.claude/, and (optionally)
+# Install the standalone claudex (Codex-reconciler) files into ~/.claude/, and (optionally)
 # wire the UserPromptSubmit hook into settings.json.
 #
 # The other two edits (post-edit-verify.sh, CLAUDE.md) are personal/optional and
@@ -16,10 +16,10 @@ copy() {  # src-rel  dest-subdir  mode
   echo "  installed $DEST/$2/$(basename "$1")"
 }
 
-echo "Installing codex-reconciler into $DEST ..."
+echo "Installing claudex into $DEST ..."
 copy scripts/codex_bridge.sh      scripts  755
 copy hooks/codex-trigger.sh       hooks    755
-copy agents/codex-reconciler.md   agents   644
+copy agents/claudex.md            agents   644
 copy commands/check-with-codex.md commands 644
 
 # --- wire the UserPromptSubmit hook into settings.json (idempotent) ----------
@@ -52,6 +52,6 @@ Done. Optional/personal edits NOT applied automatically (review first):
   * Shellcheck enhancement for a post-edit hook: $SRC/edits/post-edit-verify.sh.snippet.md
   * Durable global instruction in CLAUDE.md:      $SRC/edits/CLAUDE.md.snippet.md
 
-The codex-reconciler subagent loads on your NEXT Claude Code session.
+The claudex subagent loads on your NEXT Claude Code session.
 The bridge and /check-with-codex command work right away.
 EOF

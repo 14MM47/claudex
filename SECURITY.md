@@ -2,8 +2,8 @@
 
 ## ⚠️ Data egress — read this first
 
-`codex-reconciler` is a developer convenience tool that **sends your source code to
-OpenAI**. To reconcile a claim, it invokes the Codex CLI, which reads the relevant
+`claudex` (Claudex, the Codex reconciler) is a developer convenience tool that
+**sends your source code to OpenAI**. To reconcile a claim, it invokes the Codex CLI, which reads the relevant
 files in the target repository and transmits that content to OpenAI's API under your
 account, where it is processed per OpenAI's data-usage terms.
 
