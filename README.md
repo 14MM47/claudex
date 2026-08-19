@@ -1,6 +1,7 @@
 # claudex
 
 [![CI](https://github.com/14MM47/claudex/actions/workflows/ci.yml/badge.svg)](https://github.com/14MM47/claudex/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/tag/14MM47/claudex?label=release&color=blue)](https://github.com/14MM47/claudex/tags)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-agent-d97757?logo=anthropic&logoColor=white)
 ![OpenAI Codex](https://img.shields.io/badge/OpenAI%20Codex-GPT--5.x-412991?logo=openai&logoColor=white)
 ![Bash](https://img.shields.io/badge/Bash-5.x-4EAA25?logo=gnubash&logoColor=white)
@@ -120,14 +121,16 @@ T=/tmp/codex_thread
 - A working **Codex CLI** — either the VS Code / Cursor `openai.chatgpt` extension
   installed and logged in, or a standalone `codex` on `PATH`. Auth is read from
   `~/.codex/auth.json`.
-- **Platform: Linux is verified** (`linux-x86_64`). **macOS is best-effort and
-  currently untested** — the detector tries the conventional `darwin-arm64` /
-  `darwin-x64` bundle paths and falls back to any `bin/*/codex`, but this hasn't been
-  confirmed on a real Mac. If auto-detection misses on any platform, set `CODEX_BIN`
-  to the binary's path to override. (Bash only; on Windows use WSL.)
+- **Platform: Linux is verified** (`linux-x86_64`), including WSL. **macOS:
+  the installer, binary detection, and session-threading paths are CI-tested
+  on `macos-latest`** (BSD userland, `gtimeout` via brew coreutils), but the
+  workflow has not yet been run against a real Codex extension bundle on
+  physical Mac hardware. If auto-detection misses on any platform, set
+  `CODEX_BIN` to the binary's path to override. (Bash only; on Windows use WSL.)
 - GNU coreutils **`timeout`** (the bridge wraps every Codex call in it).
-  Preinstalled on Linux; on macOS `brew install coreutils` and put GNU `timeout`
-  on `PATH` (e.g. via brew's `gnubin`).
+  Preinstalled on Linux; on macOS `brew install coreutils` — the bridge
+  auto-detects brew's `gtimeout`, no `gnubin` PATH setup needed. With neither
+  present the bridge refuses to run rather than make an unbounded billed call.
 - `jq` (used by the hook to parse the prompt event and by `install.sh` to wire
   `settings.json`; both degrade gracefully without it).
 - `shellcheck` (optional; only for the `post-edit-verify.sh` lint enhancement).
@@ -137,7 +140,7 @@ T=/tmp/codex_thread
 | Symptom | Fix |
 |---|---|
 | `no codex binary found` | Install and log in to the VS Code / Cursor `openai.chatgpt` extension, or put a standalone `codex` on `PATH`, or `export CODEX_BIN=/path/to/codex`. Verify with `~/.claude/scripts/codex_bridge.sh which`. |
-| `timeout: command not found` (macOS) | `brew install coreutils`, then expose GNU `timeout` on `PATH` (brew's `gnubin`). |
+| `GNU 'timeout' not found` (macOS) | `brew install coreutils` — the bridge picks up `gtimeout` automatically. |
 | `warning: could not capture session id` | A Codex upgrade changed the `exec` stdout format, so multi-turn `reply` will fail — see [Compatibility & stability](#compatibility--stability); pin or downgrade the extension. |
 | Bridge gives up after ~5 minutes | That's the default cap — raise `CODEX_BRIDGE_TIMEOUT` (seconds). |
 | Hook never fires | `jq` missing or `settings.json` not wired — rerun `./install.sh`; hooks (and the subagent) load on the **next** Claude Code session. |
@@ -155,3 +158,7 @@ This drives **undocumented surfaces** of the Codex CLI and may break on upgrades
 **Tested against `codex` 0.135.0-alpha.1** (extension `openai.chatgpt` 26.527).
 If a Codex upgrade changes the `exec` output format or flags, the bridge's
 session-id capture is the first thing to check. Pin or re-verify after upgrades.
+
+CI runs 39 no-network test cases (hook-trigger regex plus `find_codex` and
+session-threading fixtures against a fake codex binary) on Linux and macOS —
+see `tests/` and [CHANGELOG.md](CHANGELOG.md) for release history.

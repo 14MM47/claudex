@@ -30,7 +30,10 @@ for arg in "$@"; do
 done
 
 copy() {  # src-rel  dest-subdir  mode
-  install -D -m "$3" "$SRC/$1" "$DEST/$2/$(basename "$1")"
+  # mkdir -p + install -m, not install -D: -D is GNU-only and hard-fails on
+  # stock macOS/BSD install.
+  mkdir -p "$DEST/$2"
+  install -m "$3" "$SRC/$1" "$DEST/$2/$(basename "$1")"
   echo "  installed $DEST/$2/$(basename "$1")"
 }
 

@@ -39,3 +39,23 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run bridge fixture tests
         run: tests/test_codex_bridge.sh
+
+  macos-test:
+    name: macOS (BSD userland) tests + install
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GNU coreutils (gtimeout)
+        run: brew install coreutils
+      - name: Run trigger tests
+        run: tests/test_codex_trigger.sh
+      - name: Run bridge fixture tests
+        run: tests/test_codex_bridge.sh
+      - name: Scratch install with stubbed codex (custom CLAUDE_HOME with space)
+        run: |
+          stubdir="$(mktemp -d)"
+          printf '#!/bin/sh\ntrue\n' > "$stubdir/codex" && chmod 755 "$stubdir/codex"
+          dest="$(mktemp -d)/claude home/.claude"
+          CLAUDE_HOME="$dest" CODEX_BIN="$stubdir/codex" ./install.sh --no-wire
+          grep -q "codex_bridge.sh" "$dest/agents/claudex.md"
+          test -x "$dest/scripts/codex_bridge.sh"

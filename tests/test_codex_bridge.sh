@@ -27,6 +27,13 @@ case "$(uname -m)" in
 esac
 PLAT="$OS-$ARCH"
 
+# Minimal PATH for bridge calls, plus the dir holding timeout/gtimeout (on
+# macOS gtimeout lives under a brew prefix, not /usr/bin).
+SAFE_PATH="/usr/bin:/bin"
+for t in timeout gtimeout; do
+  p="$(command -v "$t" 2>/dev/null)" && { SAFE_PATH="$SAFE_PATH:$(dirname "$p")"; break; }
+done
+
 pass=0 fail=0
 check() {  # check DESC CMD... — CMD's exit status decides pass/fail
   local desc="$1"; shift
@@ -38,7 +45,7 @@ check() {  # check DESC CMD... — CMD's exit status decides pass/fail
 # RB_PATH / RB_EXTROOT / RB_CODEX_BIN configure the fixture per call.
 run_bridge() {
   env HOME="$FAKE_HOME" \
-      PATH="${RB_PATH:-/usr/bin:/bin}" \
+      PATH="${RB_PATH:-$SAFE_PATH}" \
       CODEX_BRIDGE_NO_WSL_SCAN=1 \
       VSCODE_EXTENSIONS="${RB_EXTROOT:-}" \
       CODEX_BIN="${RB_CODEX_BIN:-}" \
@@ -58,10 +65,10 @@ check "non-executable CODEX_BIN dies with exit 2" test "$?" -eq 2
 
 # --- find_codex: codex on PATH -----------------------------------------------
 mkexe "$WORK/pathbin/codex"
-out="$(RB_PATH="$WORK/pathbin:/usr/bin:/bin" run_bridge which)"
+out="$(RB_PATH="$WORK/pathbin:$SAFE_PATH" run_bridge which)"
 check "standalone codex on PATH is found" test "$out" = "$WORK/pathbin/codex"
 
-out="$(RB_CODEX_BIN="$WORK/override/codex" RB_PATH="$WORK/pathbin:/usr/bin:/bin" run_bridge which)"
+out="$(RB_CODEX_BIN="$WORK/override/codex" RB_PATH="$WORK/pathbin:$SAFE_PATH" run_bridge which)"
 check "CODEX_BIN wins over PATH" test "$out" = "$WORK/override/codex"
 
 # --- find_codex: extension bundle under VSCODE_EXTENSIONS --------------------
@@ -76,7 +83,7 @@ out="$(RB_EXTROOT="$EXT" run_bridge which)"
 check "newest extension version wins (0.10.0 > 0.9.0, sort -V)" \
   test "$out" = "$EXT/openai.chatgpt-0.10.0/bin/$PLAT/codex"
 
-out="$(RB_EXTROOT="$EXT" RB_PATH="$WORK/pathbin:/usr/bin:/bin" run_bridge which)"
+out="$(RB_EXTROOT="$EXT" RB_PATH="$WORK/pathbin:$SAFE_PATH" run_bridge which)"
 check "PATH wins over extension bundle" test "$out" = "$WORK/pathbin/codex"
 
 EXT2="$WORK/ext2"

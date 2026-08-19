@@ -134,13 +134,20 @@ elif [[ "$READ_STDIN" -eq 1 ]]; then
 fi
 [[ -n "$PROMPT" ]] || die "empty prompt"
 
+# GNU timeout, or gtimeout from brew's coreutils on macOS. Refuse to run
+# without one — an unbounded billed call is worse than a clear error.
+if command -v timeout >/dev/null 2>&1; then TIMEOUT_BIN=timeout
+elif command -v gtimeout >/dev/null 2>&1; then TIMEOUT_BIN=gtimeout
+else die "GNU 'timeout' not found (macOS: brew install coreutils provides gtimeout)"
+fi
+
 CODEX="$(find_codex)"
 COMMON=(exec --sandbox "$SANDBOX" --skip-git-repo-check --color never
         -o "${BASE}.reply")
 
 run() {  # runs codex in the target dir, capturing transcript to ${BASE}.log
   local dir="${CD:-$PWD}"
-  ( cd "$dir" && timeout "$TIMEOUT" "$CODEX" "$@" ) >"${BASE}.log" 2>&1
+  ( cd "$dir" && "$TIMEOUT_BIN" "$TIMEOUT" "$CODEX" "$@" ) >"${BASE}.log" 2>&1
 }
 
 if [[ "$SUB" == "start" ]]; then
