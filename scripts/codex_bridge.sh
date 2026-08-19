@@ -22,9 +22,11 @@
 # Default BASE: ${CLAUDE_JOB_DIR:-${TMPDIR:-/tmp}}/codex_bridge_default
 #
 # Env overrides:
-#   CODEX_BRIDGE_SANDBOX   sandbox mode (default: read-only)
-#   CODEX_BRIDGE_TIMEOUT   seconds before giving up (default: 300)
-#   CODEX_BIN              explicit path to codex binary (skips auto-detect)
+#   CODEX_BRIDGE_SANDBOX     sandbox mode (default: read-only)
+#   CODEX_BRIDGE_TIMEOUT     seconds before giving up (default: 300)
+#   CODEX_BIN                explicit path to codex binary (skips auto-detect)
+#   CODEX_BRIDGE_NO_WSL_SCAN set non-empty to skip scanning Windows-host
+#                            extension dirs under /mnt (WSL only; used by tests)
 set -euo pipefail
 
 die() { echo "codex_bridge: $*" >&2; exit 2; }
@@ -68,7 +70,7 @@ find_codex() {
   # WSL: VS Code / Cursor usually run on the Windows host, so the extension
   # (and its bundled linux-x86_64 codex) lives under /mnt/<drive>/Users/<user>.
   # Append any such dirs; the version-sort below still picks the newest bundle.
-  if grep -qiE 'microsoft|wsl' /proc/version 2>/dev/null; then
+  if [[ -z "${CODEX_BRIDGE_NO_WSL_SCAN:-}" ]] && grep -qiE 'microsoft|wsl' /proc/version 2>/dev/null; then
     local w
     for w in /mnt/*/Users/*/.vscode/extensions /mnt/*/Users/*/.cursor/extensions; do
       [[ -d "$w" ]] && roots+=("$w")
@@ -149,7 +151,9 @@ if [[ "$SUB" == "start" ]]; then
     die "codex exec failed (see above)"
   fi
   # session id appears as 'session id: <uuid>' in the transcript
-  SID=$(grep -aoE 'session id: [0-9a-fA-F-]{36}' "${BASE}.log" | head -1 | awk '{print $3}')
+  # (|| true: no match must not kill the script under set -e/pipefail — the
+  # warning branch below is the intended behavior)
+  SID=$(grep -aoE 'session id: [0-9a-fA-F-]{36}' "${BASE}.log" | head -1 | awk '{print $3}' || true)
   [[ -n "$SID" ]] && printf '%s' "$SID" >"${BASE}.sid" || echo "codex_bridge: warning: could not capture session id" >&2
 else  # reply
   [[ -f "${BASE}.sid" ]] || die "no prior session for state $BASE — call 'start' first"

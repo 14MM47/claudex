@@ -19,7 +19,8 @@ jobs:
             scripts/codex_bridge.sh \
             hooks/codex-trigger.sh \
             install.sh \
-            tests/test_codex_trigger.sh
+            tests/test_codex_trigger.sh \
+            tests/test_codex_bridge.sh
 
   hook-trigger-test:
     name: Hook trigger regex
@@ -30,3 +31,11 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y jq
       - name: Run trigger tests
         run: tests/test_codex_trigger.sh
+
+  bridge-fixture-test:
+    name: Bridge fixtures (find_codex + session threading)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run bridge fixture tests
+        run: tests/test_codex_bridge.sh
