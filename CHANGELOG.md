@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.2.0 — 2026-08-19
 
 - Portable installer for stock macOS/BSD: `mkdir -p` + `install -m` instead of
   GNU-only `install -D`.
@@ -8,6 +8,8 @@
   neither rather than make an unbounded billed call.
 - macOS CI job (`macos-latest`): both test suites plus a scratch install with a
   stubbed codex binary and a space-containing custom `CLAUDE_HOME`.
+- Contributor scaffolding: `CONTRIBUTING.md`, bug/feature issue templates, PR
+  template, and an example reconciliation transcript under `examples/`.
 
 ## v0.1.0 — 2026-08-19
 

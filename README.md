@@ -95,7 +95,9 @@ You:  check with codex whether <claim about the code>
 
 ("check with claudex" works too.) Claude launches Claudex, which debates Codex and reports: the converged
 conclusion, verified findings (`file:line`), any remaining disagreement, and the number
-of billed Codex turns.
+of billed Codex turns. See
+[examples/reconciliation-transcript.md](examples/reconciliation-transcript.md)
+for what a full session and its report look like.
 
 Drive the bridge directly if you want (use the installed copy — the repo-local
 `scripts/codex_bridge.sh` works too, but the agent and hook use the installed one):
@@ -145,6 +147,12 @@ T=/tmp/codex_thread
 | Bridge gives up after ~5 minutes | That's the default cap — raise `CODEX_BRIDGE_TIMEOUT` (seconds). |
 | Hook never fires | `jq` missing or `settings.json` not wired — rerun `./install.sh`; hooks (and the subagent) load on the **next** Claude Code session. |
 | Installed with a custom `CLAUDE_HOME` | `install.sh` rewrites the installed agent/command paths and wires the hook with absolute paths automatically. The reference snippets under `edits/` assume the default `~/.claude` — adjust paths if applying them manually. |
+
+## Contributing
+
+Issues and small, focused PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+The short version: no billed or networked calls in tests/CI, the read-only
+sandbox guarantees are load-bearing, and both no-network test suites must pass.
 
 ## Compatibility & stability
 
