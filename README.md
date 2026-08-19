@@ -52,14 +52,28 @@ Edits to pre-existing user-owned files (only the additions are recorded, under `
 
 ## Install
 
+Prerequisites: `bash`, `jq`, GNU coreutils `timeout`, and a working Codex CLI —
+see [Requirements](#requirements) for details.
+
 ```bash
+git clone https://github.com/14MM47/claudex.git
+cd claudex
 ./install.sh            # copies the 4 files into ~/.claude/ and wires the hook
 ./install.sh --no-wire  # copy only; don't touch settings.json
 ```
 
+Then smoke-test that the bridge can find your Codex binary (`install.sh` also
+runs this check and warns if it fails):
+
+```bash
+~/.claude/scripts/codex_bridge.sh which   # prints the codex binary the bridge will use
+```
+
 `install.sh` copies the four standalone files into `~/.claude/` and (unless
 `--no-wire`) idempotently adds the `UserPromptSubmit` hook to `~/.claude/settings.json`
-via `jq`, backing the file up first. The other two edits are **personal/optional** and
+via `jq`, backing the file up first. Set `CLAUDE_HOME=/some/path` to install
+elsewhere — the installer rewrites the installed agent/command files so their
+paths match. The other two edits are **personal/optional** and
 are left to you:
 
 ```bash
@@ -82,10 +96,11 @@ You:  check with codex whether <claim about the code>
 conclusion, verified findings (`file:line`), any remaining disagreement, and the number
 of billed Codex turns.
 
-Drive the bridge directly if you want:
+Drive the bridge directly if you want (use the installed copy — the repo-local
+`scripts/codex_bridge.sh` works too, but the agent and hook use the installed one):
 
 ```bash
-BR=scripts/codex_bridge.sh
+BR=~/.claude/scripts/codex_bridge.sh
 T=/tmp/codex_thread
 "$BR" start --state "$T" --cd /path/to/repo "Your question. Cite file:line."
 "$BR" reply --state "$T" "Follow-up — same session, full context retained."
@@ -110,8 +125,23 @@ T=/tmp/codex_thread
   `darwin-x64` bundle paths and falls back to any `bin/*/codex`, but this hasn't been
   confirmed on a real Mac. If auto-detection misses on any platform, set `CODEX_BIN`
   to the binary's path to override. (Bash only; on Windows use WSL.)
-- `jq` (used by the hook to parse the prompt event; it degrades gracefully without it).
+- GNU coreutils **`timeout`** (the bridge wraps every Codex call in it).
+  Preinstalled on Linux; on macOS `brew install coreutils` and put GNU `timeout`
+  on `PATH` (e.g. via brew's `gnubin`).
+- `jq` (used by the hook to parse the prompt event and by `install.sh` to wire
+  `settings.json`; both degrade gracefully without it).
 - `shellcheck` (optional; only for the `post-edit-verify.sh` lint enhancement).
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `no codex binary found` | Install and log in to the VS Code / Cursor `openai.chatgpt` extension, or put a standalone `codex` on `PATH`, or `export CODEX_BIN=/path/to/codex`. Verify with `~/.claude/scripts/codex_bridge.sh which`. |
+| `timeout: command not found` (macOS) | `brew install coreutils`, then expose GNU `timeout` on `PATH` (brew's `gnubin`). |
+| `warning: could not capture session id` | A Codex upgrade changed the `exec` stdout format, so multi-turn `reply` will fail — see [Compatibility & stability](#compatibility--stability); pin or downgrade the extension. |
+| Bridge gives up after ~5 minutes | That's the default cap — raise `CODEX_BRIDGE_TIMEOUT` (seconds). |
+| Hook never fires | `jq` missing or `settings.json` not wired — rerun `./install.sh`; hooks (and the subagent) load on the **next** Claude Code session. |
+| Installed with a custom `CLAUDE_HOME` | `install.sh` rewrites the installed agent/command paths and wires the hook with absolute paths automatically. The reference snippets under `edits/` assume the default `~/.claude` — adjust paths if applying them manually. |
 
 ## Compatibility & stability
 
