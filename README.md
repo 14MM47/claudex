@@ -8,7 +8,7 @@
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
 ![Status](https://img.shields.io/badge/status-experimental-orange)
 
-**Claudex** — a global Claude Code ↔ OpenAI Codex **adversarial-collaboration**
+**Claudex** - a global Claude Code ↔ OpenAI Codex **adversarial-collaboration**
 workflow: Claudex is the Codex reconciler.
 
 Asking Claude Code to *"check with Codex"* hands the disputed question, claim, diff,
